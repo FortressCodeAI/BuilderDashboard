@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>BaseLayerOS Builder Dashboard</title>
+        <link rel="stylesheet" href="styles.css" />
+        </head>
+
+        <body>
+          <header>
+              <h1>BaseLayerOS Builder Dashboard</h1>
+                  <p class="subtitle">Deterministic Governance & Compliance Engineering</p>
+                    </header>
+
+                      <main>
+                          <section id="sidebar">
+                                <h2>Artifacts</h2>
+                                      <div id="artifact-list" class="scroll"></div>
+                                          </section>
+
+                                              <section id="content">
+                                                    <div id="envelope" class="panel">
+                                                            <h2>Artifact Envelope</h2>
+                                                                    <p>Select an artifact to view its governance envelope.</p>
+                                                                          </div>
+
+                                                                                <div id="workflow" class="panel">
+                                                                                        <h2>Workflow</h2>
+                                                                                                <p>Steps will appear here once an artifact is selected.</p>
+                                                                                                      </div>
+                                                                                                          </section>
+                                                                                                            </main>
+
+                                                                                                              <footer>
+                                                                                                                  <p>BaseLayerOS — Governance Substrate v1</p>
+                                                                                                                    </footer>
+
+                                                                                                                      <script src="app.js"></script>
+                                                                                                                      </body>
+                                                                                                                      </html>

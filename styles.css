@@ -1,108 +1,101 @@
-/* GLOBAL */
-body {
-  margin: 0;
-  background: #0d0f12;
-  color: #e5e7eb;
-  font-family: Inter, sans-serif;
-  display: flex;
-  height: 100vh;
-}
+/* ============================================================
+   BaseLayerOS Governance UI — Future Standard Edition
+      ============================================================ */
 
-#app {
-  display: flex;
-  width: 100%;
-}
+      body {
+        margin: 0;
+          font-family: "Inter", sans-serif;
+            background: #0f1115;
+              color: #e5e7eb;
+                display: flex;
+                  flex-direction: column;
+                    height: 100vh;
+                    }
 
-/* SIDEBAR */
-.sidebar {
-  width: 240px;
-  background: #111317;
-  padding: 20px;
-  border-right: 1px solid #1f2329;
-  display: flex;
-  flex-direction: column;
-}
+                    header {
+                      padding: 20px;
+                        background: #111318;
+                          border-bottom: 1px solid #1f2127;
+                          }
 
-.logo {
-  margin-bottom: 30px;
-  font-size: 20px;
-  font-weight: 700;
-}
+                          header h1 {
+                            margin: 0;
+                              font-size: 26px;
+                                font-weight: 600;
+                                }
 
-.nav-item {
-  background: none;
-  border: none;
-  color: #9ca3af;
-  padding: 12px 0;
-  text-align: left;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-}
+                                .subtitle {
+                                  margin-top: 4px;
+                                    color: #9ca3af;
+                                      font-size: 14px;
+                                      }
 
-.nav-item:hover {
-  color: #fff;
-}
+                                      main {
+                                        display: flex;
+                                          flex: 1;
+                                            overflow: hidden;
+                                            }
 
-/* MAIN */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+                                            #sidebar {
+                                              width: 300px;
+                                                background: #13151b;
+                                                  border-right: 1px solid #1f2127;
+                                                    padding: 20px;
+                                                      overflow-y: auto;
+                                                      }
 
-/* TOPBAR */
-.topbar {
-  height: 60px;
-  background: #111317;
-  border-bottom: 1px solid #1f2329;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-}
+                                                      #sidebar h2 {
+                                                        margin-top: 0;
+                                                          font-size: 18px;
+                                                            color: #9ca3af;
+                                                            }
 
-.status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+                                                            .artifact-card {
+                                                              background: #1a1d24;
+                                                                padding: 12px;
+                                                                  margin-bottom: 10px;
+                                                                    border-radius: 6px;
+                                                                      cursor: pointer;
+                                                                        transition: background 0.2s;
+                                                                        }
 
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
+                                                                        .artifact-card:hover {
+                                                                          background: #23262f;
+                                                                          }
 
-.status-dot.green {
-  background: #22c55e;
-}
+                                                                          #content {
+                                                                            flex: 1;
+                                                                              padding: 20px;
+                                                                                overflow-y: auto;
+                                                                                }
 
-.badge {
-  background: #1f2937;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-}
+                                                                                .panel {
+                                                                                  background: #1a1d24;
+                                                                                    padding: 20px;
+                                                                                      border-radius: 8px;
+                                                                                        margin-bottom: 20px;
+                                                                                          border: 1px solid #23262f;
+                                                                                          }
 
-/* CONTENT */
-#content-area {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
+                                                                                          .panel h2 {
+                                                                                            margin-top: 0;
+                                                                                              font-size: 20px;
+                                                                                                color: #9ca3af;
+                                                                                                }
 
-/* CONSOLE */
-.console {
-  height: 180px;
-  background: #0f1114;
-  border-top: 1px solid #1f2329;
-  padding: 10px 20px;
-  overflow-y: auto;
-}
+                                                                                                pre {
+                                                                                                  background: #0f1115;
+                                                                                                    padding: 15px;
+                                                                                                      border-radius: 6px;
+                                                                                                        overflow-x: auto;
+                                                                                                          border: 1px solid #23262f;
+                                                                                                          }
 
-#event-log {
-  font-family: monospace;
-  font-size: 13px;
-  white-space: pre-wrap;
-}
+                                                                                                          footer {
+                                                                                                            padding: 10px;
+                                                                                                              text-align: center;
+                                                                                                                background: #111318;
+                                                                                                                  border-top: 1px solid #1f2127;
+                                                                                                                    font-size: 12px;
+                                                                                                                      color: #6b7280;
+                                                                                                                      }
