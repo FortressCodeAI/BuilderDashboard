@@ -1,101 +1,125 @@
-// CONFIG — replace with your gateway URL
-const API_URL = "https://your-api-gateway-url.com";
+/* ============================================================
+   BaseLayerOS Builder Dashboard — Backend Connected Edition
+      ============================================================ */
 
-// DOM
-const contentArea = document.getElementById("content-area");
-const eventLog = document.getElementById("event-log");
+      const API = {
+        base: process.env.NEXT_PUBLIC_API_URL || "http://localhost:7000",
 
-// NAVIGATION
-document.querySelectorAll(".nav-item").forEach(btn => {
-  btn.addEventListener("click", () => loadView(btn.dataset.view));
-});
+          async get(path) {
+              const res = await fetch(`${this.base}${path}`);
+                  if (!res.ok) throw new Error(`GET ${path} failed`);
+                      return res.json();
+                        },
 
-// INITIAL LOAD
-loadView("dashboard");
-verifyIdentity();
-connectEventStream();
+                          async post(path, body = {}) {
+                              const res = await fetch(`${this.base}${path}`, {
+                                    method: "POST",
+                                          headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify(body)
+                                                    });
+                                                        if (!res.ok) throw new Error(`POST ${path} failed`);
+                                                            return res.json();
+                                                              }
+                                                              };
 
-// VIEWS
-function loadView(view) {
-  if (view === "dashboard") {
-    contentArea.innerHTML = `
-      <h1>Builder Dashboard</h1>
-      <p>Welcome to the BaseLayerOS Builder Environment.</p>
-      <button onclick="openEnvelope()">Open Governance Envelope</button>
-    `;
-  }
+                                                              /* ------------------------------------------------------------
+                                                                 STATE ENGINE
+                                                                    ------------------------------------------------------------ */
+                                                                    const State = {
+                                                                      modules: {},
+                                                                        artifacts: [],
+                                                                          activeArtifact: null,
+                                                                            ui: {}
+                                                                            };
 
-  if (view === "modules") {
-    contentArea.innerHTML = `
-      <h1>Modules</h1>
-      <p>Module builder coming soon.</p>
-    `;
-  }
+                                                                            /* ------------------------------------------------------------
+                                                                               EVENT BUS
+                                                                                  ------------------------------------------------------------ */
+                                                                                  const EventBus = {
+                                                                                    listeners: {},
+                                                                                      emit(event, payload) {
+                                                                                          (this.listeners[event] || []).forEach(cb => cb(payload));
+                                                                                            },
+                                                                                              on(event, cb) {
+                                                                                                  if (!this.listeners[event]) this.listeners[event] = [];
+                                                                                                      this.listeners[event].push(cb);
+                                                                                                        }
+                                                                                                        };
 
-  if (view === "envelope") {
-    contentArea.innerHTML = `
-      <h1>Governance Envelope</h1>
-      <p>Select an envelope to view its lifecycle.</p>
-    `;
-  }
+                                                                                                        /* ------------------------------------------------------------
+                                                                                                           ARTIFACT REGISTRY (Backend Connected)
+                                                                                                              ------------------------------------------------------------ */
+                                                                                                              const ArtifactRegistry = {
+                                                                                                                async load() {
+                                                                                                                    const data = await API.get("/artifacts");
+                                                                                                                        State.artifacts = data;
+                                                                                                                            EventBus.emit("artifactsLoaded", data);
+                                                                                                                              },
+                                                                                                                                get(id) {
+                                                                                                                                    return State.artifacts.find(a => a.id === id);
+                                                                                                                                      }
+                                                                                                                                      };
 
-  if (view === "hitl") loadHITL();
+                                                                                                                                      /* ------------------------------------------------------------
+                                                                                                                                         MODULE REGISTRY (Backend Connected)
+                                                                                                                                            ------------------------------------------------------------ */
+                                                                                                                                            const ModuleRegistry = {
+                                                                                                                                              async load(name) {
+                                                                                                                                                  const module = await API.get(`/modules/${name}`);
+                                                                                                                                                      State.modules[name] = module;
+                                                                                                                                                          EventBus.emit("moduleLoaded", { name });
+                                                                                                                                                            },
+                                                                                                                                                              get(name) {
+                                                                                                                                                                  return State.modules[name];
+                                                                                                                                                                    }
+                                                                                                                                                                    };
 
-  if (view === "logs") {
-    contentArea.innerHTML = `<h1>Substrate Logs</h1>`;
-  }
-}
+                                                                                                                                                                    /* ------------------------------------------------------------
+                                                                                                                                                                       UI HYDRATION
+                                                                                                                                                                          ------------------------------------------------------------ */
+                                                                                                                                                                          function hydrateUI() {
+                                                                                                                                                                            State.ui.artifactList = document.getElementById("artifact-list");
 
-// AUTH
-async function verifyIdentity() {
-  const res = await fetch(`${API_URL}/auth/verify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      signature: "dev-mode",
-      publicKey: "dev-mode",
-      nonce: "123"
-    })
-  });
+                                                                                                                                                                              EventBus.on("artifactsLoaded", artifacts => {
+                                                                                                                                                                                  State.ui.artifactList.innerHTML = artifacts
+                                                                                                                                                                                        .map(
+                                                                                                                                                                                                a => `
+                                                                                                                                                                                                      <div class="artifact-card" data-id="${a.id}">
+                                                                                                                                                                                                              <h3>${a.name}</h3>
+                                                                                                                                                                                                                      <p>${a.description}</p>
+                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                `
+                                                                                                                                                                                                                                      )
+                                                                                                                                                                                                                                            .join("");
 
-  const data = await res.json();
-  document.getElementById("user-name").textContent = data.userId;
-  document.getElementById("authority-level").textContent = `Authority: ${data.authorityLevel}`;
-}
+                                                                                                                                                                                                                                                document.querySelectorAll(".artifact-card").forEach(card => {
+                                                                                                                                                                                                                                                      card.addEventListener("click", () => {
+                                                                                                                                                                                                                                                              const id = card.getAttribute("data-id");
+                                                                                                                                                                                                                                                                      const artifact = ArtifactRegistry.get(id);
+                                                                                                                                                                                                                                                                              State.activeArtifact = artifact;
 
-// OPEN ENVELOPE
-async function openEnvelope() {
-  const res = await fetch(`${API_URL}/envelope/open`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      request: "Test request from Builder UI",
-      policyBindings: [],
-      riskClass: "low"
-    })
-  });
+                                                                                                                                                                                                                                                                                      renderArtifact(artifact);
+                                                                                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                                                                                });
+                                                                                                                                                                                                                                                                                                  });
+                                                                                                                                                                                                                                                                                                  }
 
-  const data = await res.json();
-  alert("Envelope opened: " + data.envelopeId);
-}
+                                                                                                                                                                                                                                                                                                  /* ------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                     ARTIFACT RENDERER
+                                                                                                                                                                                                                                                                                                        ------------------------------------------------------------ */
+                                                                                                                                                                                                                                                                                                        function renderArtifact(artifact) {
+                                                                                                                                                                                                                                                                                                          document.getElementById("envelope").innerHTML = `
+                                                                                                                                                                                                                                                                                                              <h2>${artifact.name}</h2>
+                                                                                                                                                                                                                                                                                                                  <pre>${JSON.stringify(artifact.envelope, null, 2)}</pre>
+                                                                                                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                                                    }
 
-// HITL
-async function loadHITL() {
-  const res = await fetch(`${API_URL}/hitl/pending`);
-  const data = await res.json();
+                                                                                                                                                                                                                                                                                                                    /* ------------------------------------------------------------
+                                                                                                                                                                                                                                                                                                                       INIT
+                                                                                                                                                                                                                                                                                                                          ------------------------------------------------------------ */
+                                                                                                                                                                                                                                                                                                                          async function init() {
+                                                                                                                                                                                                                                                                                                                            hydrateUI();
+                                                                                                                                                                                                                                                                                                                              await ArtifactRegistry.load();
+                                                                                                                                                                                                                                                                                                                              }
 
-  contentArea.innerHTML = `
-    <h1>HITL Approvals</h1>
-    <pre>${JSON.stringify(data, null, 2)}</pre>
-  `;
-}
-
-// EVENT STREAM
-function connectEventStream() {
-  const ws = new WebSocket(`${API_URL.replace("https", "wss")}/events`);
-
-  ws.onmessage = (msg) => {
-    const event = JSON.parse(msg.data);
-    eventLog.textContent += `\n${new Date().toISOString()} — ${event.type}`;
-  };
-}
+                                                                                                                                                                                                                                                                                                                              init();
